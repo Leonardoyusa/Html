@@ -1,0 +1,31 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treatment Data Input Form</title>
+</head>
+<body>
+    <h2>Treatment Information</h2>
+    <form action="#" method="post">
+        <label for="treatment-name">Treatment Name:</label><br>
+        <input type="text" id="treatment-name" name="treatment-name"><br><br>
+
+        <label for="start-date">Start Date:</label><br>
+        <input type="date" id="start-date" name="start-date"><br><br>
+
+        <label for="end-date">End Date:</label><br>
+        <input type="date" id="end-date" name="end-date"><br><br>
+
+        <label for="initial-dosage">Initial Dosage (first 5 days):</label><br>
+        <input type="text" id="initial-dosage" name="initial-dosage"><br><br>
+
+        <label for="regular-dosage">Regular Dosage (after the first 5 days):</label><br>
+        <input type="text" id="regular-dosage" name="regular-dosage"><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

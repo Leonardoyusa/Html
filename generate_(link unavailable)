@@ -1,0 +1,12 @@
+import pandas as pd
+
+treatment_name = request.form['treatment-name']
+posology = request.form['posology']
+days_per_week = request.form['days-per-week']
+selected_days = request.form['selected-days[]']
+first_dosage_date = request.form['first-dosage-date']
+first_dosage_time = request.form['first-dosage-time']
+
+df = pd.DataFrame({'Treatment Name': [treatment_name], 'Posology': [posology], 'Days per Week': [days_per_week], 'Selected Days': [selected_days], 'First Dosage Date': [first_dosage_date], 'First Dosage Time': [first_dosage_time]})
+
+print(df)

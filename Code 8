@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Therapeutic Table Input Form</title>
+</head>
+<body>
+<h2>Treatment Information</h2>
+<form action="#" method="post">
+<label for="treatment-name">Treatment Name:</label><br>
+<input type="text" id="treatment-name" name="treatment-name" required><br><br>
+<label for="posology">Posology:</label><br>
+<input type="text" id="posology" name="posology" placeholder="Enter posology information (e.g., '2 tablets daily for 10 days')" pattern="\d+ tablets? daily for \d+ days?"><br><br>
+<label for="days-per-week">Days per Week:</label><br>
+<div>
+<input type="radio" id="everyday" name="days-per-week" value="Everyday">
+<label for="everyday">Everyday</label>
+</div>
+<div>
+<input type="radio" id="select-days" name="days-per-week" value="Select Days">
+<label for="select-days">Select Days</label>
+</div>
+<div id="week-days" style="display: none;">
+<select name="selected-days[]" id="selected-days" multiple>
+<option value="Sun">Sunday</option>
+<option value="Mon">Monday</option>
+<option value="Tue">Tuesday</option>
+<option value="Wed">Wednesday</option>
+<option value="Thu">Thursday</option>
+<option value="Fri">Friday</option>
+<option value="Sat">Saturday</option>
+</select>
+</div>
+<script>
+const form = document.getElementById('form');
+form.addEventListener('submit', (e) => {
+if (!form.checkValidity()) {
+e.preventDefault();
+form.setCustomValidity('Please enter valid data');
+}
+});
+</script>
+</form>
+</body>
+</html>

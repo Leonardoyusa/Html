@@ -19,4 +19,37 @@ html
         <label for="dosage">Dosage:</label><br>
         <input type="text" id="dosage" name="dosage"><br><br>
 
-        <label for="days-per-week">Days per Week:</
+        <label for="days-per-week">Days per Week:</label><br>
+        <div>
+            <input type="checkbox" id="sun" name="days-per-week" value="Sun">
+            <label for="sun">Sunday</label>
+        </div>
+        <div>
+            <input type="checkbox" id="mon" name="days-per-week" value="Mon">
+            <label for="mon">Monday</label>
+        </div>
+        <div>
+            <input type="checkbox" id="tue" name="days-per-week" value="Tue">
+            <label for="tue">Tuesday</label>
+        </div>
+        <div>
+            <input type="checkbox" id="wed" name="days-per-week" value="Wed">
+            <label for="wed">Wednesday</label>
+        </div>
+        <div>
+            <input type="checkbox" id="thu" name="days-per-week" value="Thu">
+            <label for="thu">Thursday</label>
+        </div>
+        <div>
+            <input type="checkbox" id="fri" name="days-per-week" value="Fri">
+            <label for="fri">Friday</label>
+        </div>
+        <div>
+            <input type="checkbox" id="sat" name="days-per-week" value="Sat">
+            <label for="sat">Saturday</label>
+        </div>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

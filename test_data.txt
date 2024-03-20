@@ -1,1 +1,1 @@
-
+treatment-name=Test+Treatment&posology=2x+daily&days-per-week=3&selected-days[]=Mon&selected-days[]=Wed&selected-days[]=Fri&first-dosage-date=2023-03-01&first-dosage-time=10:00

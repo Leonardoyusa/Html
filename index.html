@@ -1,0 +1,18 @@
+html
+<html>
+<head>
+    <title>Treatment Schedule Generator</title>
+</head>
+<body>
+    <h1>Treatment Schedule Generator</h1>
+    <form method="POST" action="/generate-schedule">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.name.label }}: {{ form.name }}<br>
+            {{ form.frequency.label }}: {{ form.frequency }}<br>
+            {{ form.start_time.label }}: {{ form.start_time }}<br>
+            <input type="submit" value="Generate Schedule">
+        </div>
+    </form>
+</body>
+</html>

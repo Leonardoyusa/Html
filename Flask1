@@ -1,10 +1,33 @@
-@app.route('/submit', methods=['POST'])
-def submit_form():
-	treatment_name = request.form['treatment-name']
-	posology = request.form['posology']
-	days_per_week = request.form['days-per-week']
-	selected_days = request.form['selected-days[]']
-	first_dosage_date = request.form['first-dosage-date']
-	first_dosage_time = request.form['first-dosage-time']
-	df = pd.DataFrame({'Treatment Name': [treatment_name], 'Posology': [posology], 'Days per Week': [days_per_week], 'Selected Days': [selected_days], 'First Dosage Date': [first_dosage_date], 'First Dosage Time': [first_dosage_time]})
-	return jsonify(df.to_json(orient='table'))
+python
+from flask import Flask, render_template, request
+import datetime
+import pandas as pd
+
+app = Flask(__name__)
+
+# Treatment schedule generation function
+def generate_schedule(treatment_name, frequency, start_time):
+	# Generate schedule dataschedule_data = []start_datetime = datetime.datetime.strptime(start_time, '%H:%M').time()
+	current_day = datetime.date.today()
+	for i in range(7):	day_datetime = datetime.datetime.combine(current_day, start_datetime) + datetime.timedelta(days=i)
+		schedule_data.append({'date': day_datetime.strftime('%Y-%m-%d'), 'time': start_time})
+	return pd.DataFrame(schedule_data)
+
+# Route to display the HTML form
+@app.route('/')
+def show_form():return render_template('index.html')
+
+# Route to handle form submission and generate the schedule
+@app.route('/generate-schedule', methods=['POST'])
+def handle_form():treatment_name = request.form['treatment-name']
+	frequency = request.form['frequency']start_time = request.form['start-time']
+
+	# Generate the schedule data
+	schedule = generate_schedule(treatment_name, frequency, start_time)
+
+	# Return the generated schedule data as a CSV string
+	csv_string = schedule.to_csv(index=False)
+	return csv_string, 200, {'ContentType': 'text/csv'}
+
+if __name__ == '__main__':
+	app.run(host='0.0.0.0', port=80)

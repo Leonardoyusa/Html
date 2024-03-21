@@ -1,58 +1,43 @@
 python
 from flask import Flask, render_template, request
-import datetime
-import pandas as pd
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-# Treatment schedule generation function
-def generate_schedule(treatment_name, frequency, start_time):
-    # Generate schedule data
-    schedule_data = []
-    start_datetime = datetime.datetime.strptime(start_time, '%H:%M').time()
-    current_day = datetime.date.today()
-    
-    for i in range(7):
-        day_datetime = datetime.datetime.combine(current_day, start_datetime) + datetime.timedelta(days=i)
-        schedule_data.append({'date': day_datetime.strftime('%Y-%m-%d'), 'time': start_time})
-        
-        # Add additional time slots based on the frequency
-        if frequency == '12h':
-            start_datetime += datetime.timedelta(hours=12)
-            schedule_data.append({'date': day_datetime.strftime('%Y-%m-%d'), 'time': (start_datetime + datetime.timedelta(hours=12)).strftime('%H:%M')})
-        elif frequency == '8h':
-            for _ in range(2):
-                start_datetime += datetime.timedelta(hours=8)
-                schedule_data.append({'date': day_datetime.strftime('%Y-%m-%d'), 'time': start_datetime.strftime('%H:%M')})
-        elif frequency == '6h':
-            for _ in range(3):
-                start_datetime += datetime.timedelta(hours=6)
-                schedule_data.append({'date': day_datetime.strftime('%Y-%m-%d'), 'time': start_datetime.strftime('%H:%M')})
-        elif frequency == '4h':
-            for _ in range(4):
-                start_datetime += datetime.timedelta(hours=4)
-                schedule_data.append({'date': day_datetime.strftime('%Y-%m-%d'), 'time': start_datetime.strftime('%H:%M')})
-    
-    return pd.DataFrame(schedule_data)
+class Treatment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    frequency = db.Column(db.String(20), nullable=False)
+    start_time = db.Column(db.String(5), nullable=False)
 
-# Route to display the HTML form
+class TreatmentForm(FlaskForm):
+    name = StringField('Treatment Name', validators=[DataRequired()])
+    frequency = StringField('Frequency', validators=[DataRequired()])
+    start_time = StringField('Start Time', validators=[DataRequired()])
+    submit = SubmitField('Generate Schedule')
+
 @app.route('/')
 def show_form():
-    return render_template('index.html')
+    form = TreatmentForm()
+    return render_template('index.html', form=form)
 
-# Route to handle form submission and generate the schedule
 @app.route('/generate-schedule', methods=['POST'])
 def handle_form():
-    treatment_name = request.form['treatment-name']
-    frequency = request.form['frequency']
-    start_time = request.form['start-time']
-
-    # Generate the schedule data
-    schedule = generate_schedule(treatment_name, frequency, start_time)
-
-    # Return the generated schedule data as a CSV string
-    csv_string = schedule.to_csv(index=False)
-    return csv_string, 200, {'ContentType': 'text/csv'}
+    form = TreatmentForm(request.form)
+    if form.validate():
+        treatment = Treatment(name=form.name.data, frequency=form.frequency.data, start_time=form.start_time.data)
+        db.session.add(treatment)
+        db.session.commit()
+        return 'Treatment schedule generated and saved!'
+    else:
+        return 'Invalid input. Please try again.'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)

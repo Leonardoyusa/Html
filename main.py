@@ -1,57 +1,62 @@
-python 
-# main.py 
-from flask import Flask, render_template, request 
-from flask_sqlalchemy import SQLAlchemy 
-from flask_wtf import FlaskForm 
-from wtforms import StringField, SubmitField 
-from wtforms.validators import DataRequired 
-import secrets 
-import pandas as pd  
+# Im category = StringField("Category", validators=[DataRequired()]) port necessary modules
+from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 
-app = Flask(__name__) 
-app.config['SECRET_KEY'] = secrets.token_urlsafe(16) 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db' 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
-db = SQLAlchemy(app)  
+# Initialize Flask application
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'Y@m@$@k1'
 
-class Treatment(db.Model): 
-id = db.Column(db.Integer, primary_key=True) 
-name = db.Column(db.String(50), nullable=False) 
-frequency = db.Column(db.String(20), nullable=False) 
-start_time = db.Column(db.String(5), nullable=False)  
+# Configure database (SQLite)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///treatment_schedule.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-class TreatmentForm(FlaskForm): 
-name = StringField('Treatment Name', validators=[DataRequired()]) 
-frequency = StringField('Frequency', validators=[DataRequired()]) 
-start_time = StringField('Start Time', validators=[DataRequired()]) 
-submit = SubmitField('Generate Schedule')  
+# Define the Form class
+class TreatmentForm(FlaskForm):
+    name = StringField("Treatment Name", validators=[DataRequired()])
+    frequency = StringField("Frequency (in hours)", validators=[DataRequired()])
+    start_time = StringField("Start Time (HH:MM AM/PM)", validators=[DataRequired()])
+    category = StringField("Category", validators=[DataRequired()]) 
+    submit = SubmitField("Submit")
 
-@app.route('/') 
-def show_form(): 
-form = TreatmentForm() 
-return render_template('index.html', form=form)  
+# Define the Treatment model
+class Treatment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    frequency = db.Column(db.String(10), nullable=False)
+    start_time = db.Column(db.String(20), nullable=False)
+    category = db.Column(db.String(20), nullable=False)
 
-@app.route('/generate-schedule', methods=['POST']) 
-def handle_form(): 
-form = TreatmentForm(request.form) 
-if form.validate(): 
-treatment = Treatment(name=form.name.data, 
-frequency=form.frequency.data, start_time=form.start_time.data) 
-db.session.add(treatment) 
-db.session.commit()  
+# Create the tables
+with app.app_context():
+    db.create_all()
 
-# Create a dictionary from the Form data 
-data = {'Treatment Name': [form.name.data], 
-'Frequency': [form.frequency.data], 
-'Start Time': [form.start_time.data]}  
+# Define route to handle form submission and generate schedule
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    form = TreatmentForm()
+    if form.validate_on_submit():
+        # Save data to the database
+        treatment = Treatment(
+            name=form.name.data,
+            frequency=form.frequency.data,
+            start_time=form.start_time.data
+            category=form.category.data  
+        )
+        db.session.add(treatment)
+        db.session.commit()
 
-# Convert that dictionary to a DataFrame 
-df = pd.DataFrame(data)  
+        # Retrieve treatment data from the database
+        treatments = Treatment.query.all()
 
-# Convert the DataFrame to an HTML table and append it to the response string 
-return ('Treatment schedule generated and saved! 
-Here is your input:<br>' 
-+ df.to_html())  
+        # Process treatment data to create schedule (for simplicity, let's just pass the treatments to the template)
+        return render_template('index.html', form=form, treatments=treatments)
+    
+    # If the form is not submitted, render the form
+    return render_template('index.html', form=form)
 
-else: 
-return 'Invalid'
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)

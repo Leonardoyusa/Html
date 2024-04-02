@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Treatment Schedule Form</title>
+</head>
+
+<body>
+<h1>Treatment Schedule Form</h1>
+<form method="POST">
+
+<!-- include form hidden tag -->
+{{ form.hidden_tag() }}
+
+<!-- Display the treatment name input field -->
+<label for="name">{{ form.name.label }}</label><br>
+{{ form.name(id="name") }}<br>
+
+<!-- Display the time input field -->
+<label for="time">{{ form.time.label }}</label><br>
+{{ form.time(id="time") }}<br>
+
+<!-- Display the category dropdown -->
+<label for="category">{{ form.category.label }}</label><br>
+{{ form.category(id="category") }}<br>
+
+<!-- Display the checkbox for each day -->
+{% for field in form.day_fields %}
+<label for="{{ field.id }}">{{ field.label }}</label>
+{{ field(id=field.id) }}
+{% endfor %}
+
+<!-- Display the submit button -->
+<input type="submit" value="Submit"><br>
+
+</form>
+
+</body>
+
+</html>
